@@ -73,7 +73,7 @@ namespace Furball.Engine {
         }
 
         protected override void Draw(GameTime gameTime) {
-            this.GraphicsDevice.Clear(Color.CornflowerBlue);
+            this.GraphicsDevice.Clear(Color.Black);
 
             SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
             SpriteBatch.DrawString(this._debugSpriteFont, $"Time: {GameTimeSource.GetCurrentTime()}", Vector2.Zero, Color.White);
