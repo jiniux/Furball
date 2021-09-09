@@ -10,7 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
-#begin white.png
+#begin white.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -20,7 +20,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:white.png
+/build:white.jpg
 
 #begin Corbel.spritefont
 /importer:FontDescriptionImporter

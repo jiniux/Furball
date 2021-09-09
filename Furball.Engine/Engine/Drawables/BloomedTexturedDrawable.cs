@@ -35,18 +35,17 @@ namespace Furball.Engine.Engine.Drawables {
             this._bloomRenderer = new BloomRenderer();
             this._bloomRenderer.Load(FurballGame.Instance.GraphicsDevice, FurballGame.Instance.Content, texture.Width, texture.Height);
 
-            this._bloomRenderer.BloomPreset = BloomRenderer.BloomPresets.Wide;
+            this._bloomRenderer.BloomPreset = BloomRenderer.BloomPresets.SuperWide;
 
         }
         public override void Draw(GameTime time, SpriteBatch batch) {
-            this._bloomTexture = this._bloomRenderer.Draw(this._texture, this._texture.Width, this._texture.Height);
+            this._bloomTexture = this._bloomRenderer.Draw(this._texture, 1280, 720);
             FurballGame.Instance.GraphicsDevice.SetRenderTarget(null);
-
 
             batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
-            batch.Draw(this._texture, this.Position, null, this.ColorOverride, this.Rotation, Vector2.Zero, this.Scale, this.SpriteEffect, 1f);
-            batch.Draw(this._bloomTexture, this.Position, null, this.ColorOverride, this.Rotation, Vector2.Zero, this.Scale, this.SpriteEffect, 1f);
+            batch.Draw(this._texture,      new Rectangle(0, 0, 1280, 720), Color.White);
+            batch.Draw(this._bloomTexture, new Rectangle(0, 0, 1280, 720), Color.White);
 
             batch.End();
         }

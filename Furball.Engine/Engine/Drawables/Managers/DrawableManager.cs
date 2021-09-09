@@ -19,11 +19,13 @@ namespace Furball.Engine.Engine.Drawables.Managers {
             }
 
             batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+
             for (int i = 0; i != managedDrawables.Count; i++) {
                 ManagedDrawable currentDrawable = managedDrawables[i];
 
                 currentDrawable.Draw(time, batch);
             }
+
             batch.End();
 
             for (int i = 0; i != unmanagedDrawables.Count; i++) {
