@@ -1,9 +1,10 @@
 using Furball.Engine.Engine.Graphics.Drawables.Managers;
+using Furball.Engine.Engine.Graphics.PostProcessEffects;
 using Microsoft.Xna.Framework;
 
 namespace Furball.Engine.Engine {
     public class Screen : DrawableGameComponent {
-        protected DrawableManager Manager = new();
+        protected EffectDrawableManager Manager;
         public Screen() : base(FurballGame.Instance) {}
 
         public override void Draw(GameTime gameTime) {

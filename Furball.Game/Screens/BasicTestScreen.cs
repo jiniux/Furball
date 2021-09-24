@@ -3,9 +3,11 @@ using Furball.Engine;
 using Furball.Engine.Engine;
 using Furball.Engine.Engine.Graphics;
 using Furball.Engine.Engine.Graphics.Drawables;
+using Furball.Engine.Engine.Graphics.Drawables.Managers;
 using Furball.Engine.Engine.Graphics.Drawables.Tweens;
 using Furball.Engine.Engine.Graphics.Drawables.UiElements;
 using Furball.Engine.Engine.Graphics.Drawables.Tweens.TweenTypes;
+using Furball.Engine.Engine.Graphics.PostProcessEffects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MathHelper=Furball.Engine.Engine.Helpers.MathHelper;
@@ -13,6 +15,11 @@ using MathHelper=Furball.Engine.Engine.Helpers.MathHelper;
 namespace Furball.Game.Screens {
     public class BasicTestScreen : Screen {
         public override void Initialize() {
+            this.Manager = new EffectDrawableManager(FurballGame.Instance.GraphicsDevice);
+            Bloom bloom = new Bloom();
+            bloom.Load(FurballGame.Instance.GraphicsDevice, FurballGame.Instance.Content, FurballGame.WindowWidth, FurballGame.WindowHeight);
+            this.Manager.AddEffect(bloom);
+
             TexturedDrawable whiteTexture = new(ContentReader.LoadMonogameAsset<Texture2D>("white"), new Vector2(240, 240));
 
             whiteTexture.Tweens.Add(new VectorTween(TweenType.Movement, new Vector2(240, 240), new Vector2(540,   540),   1000, 10000, Easing.In));

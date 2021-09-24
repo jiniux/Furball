@@ -15,6 +15,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             this._graphicsDevice = graphicsDevice;
         }
 
+        public void AddEffect(DrawableEffect effect) => this._effects.Add(effect);
+
         public override void Draw(GameTime time, SpriteBatch batch, DrawableManagerArgs args = null) {
             Texture2D currentPass = this._drawableManager.DrawRenderTarget2D(time, batch, args);
 
