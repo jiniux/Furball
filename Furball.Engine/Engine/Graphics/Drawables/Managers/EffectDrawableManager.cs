@@ -20,6 +20,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
         public override void Draw(GameTime time, SpriteBatch batch, DrawableManagerArgs args = null) {
             Texture2D currentPass = this._drawableManager.DrawRenderTarget2D(time, batch, args);
 
+            batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+            batch.Draw(currentPass, Vector2.Zero, Color.White);
+            batch.End();
+
             if(this._target2D?.Width != FurballGame.WindowWidth || this._target2D?.Height != FurballGame.WindowHeight)
                 this._target2D = new RenderTarget2D(this._graphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight);
 
@@ -31,16 +35,22 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
 
                 currentPass = currentEffect.Draw(currentPass);
 
-                batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+                batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
                 batch.Draw(currentPass, Vector2.Zero, Color.White);
                 batch.End();
             }
 
             this._graphicsDevice.SetRenderTarget(null);
 
-            batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+            batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             batch.Draw(currentPass, Vector2.Zero, Color.White);
             batch.End();
+        }
+
+        public override void Update(GameTime time) {
+            this._drawableManager.Update(time);
+
+            base.Update(time);
         }
 
         public void Add(BaseDrawable drawable) => this._drawableManager.Add(drawable);

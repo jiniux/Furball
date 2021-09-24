@@ -531,6 +531,7 @@ namespace Furball.Engine.Engine.Graphics.PostProcessEffects {
             }
 
             //Note the final step could be done as a blend to the final texture.
+            FurballGame.Instance.GraphicsDevice.SetRenderTarget(null);
 
             return _bloomRenderTarget2DMip0;
         }
