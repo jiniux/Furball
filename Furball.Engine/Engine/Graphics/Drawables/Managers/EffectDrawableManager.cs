@@ -24,8 +24,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             batch.Draw(currentPass, Vector2.Zero, Color.White);
             batch.End();
 
+            //this._graphicsDevice.Present();
+
             if(this._target2D?.Width != FurballGame.WindowWidth || this._target2D?.Height != FurballGame.WindowHeight)
-                this._target2D = new RenderTarget2D(this._graphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight);
+                this._target2D = new RenderTarget2D(this._graphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight, false, SurfaceFormat.Alpha8, DepthFormat.Depth24);
 
             this._graphicsDevice.SetRenderTarget(this._target2D);
             this._graphicsDevice.Clear(Color.Transparent);
@@ -33,11 +35,13 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             for (int i = 0; i != this._effects.Count; i++) {
                 DrawableEffect currentEffect = this._effects[i];
 
-                currentPass = currentEffect.Draw(currentPass);
+                currentPass = currentEffect.Draw(currentPass, batch);
 
                 batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
                 batch.Draw(currentPass, Vector2.Zero, Color.White);
                 batch.End();
+
+                //this._graphicsDevice.Present();
             }
 
             this._graphicsDevice.SetRenderTarget(null);
@@ -45,6 +49,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             batch.Draw(currentPass, Vector2.Zero, Color.White);
             batch.End();
+
+            //this._graphicsDevice.Present();
         }
 
         public override void Update(GameTime time) {

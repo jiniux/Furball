@@ -44,7 +44,7 @@ namespace Furball.Engine.Engine.Graphics.PostProcessEffects {
     ///
     /// If you use ToneMapping you should apply Bloom before that step.
     /// </summary>
-    public class Bloom : DrawableEffect {
+    public class BloomRenderer {
 
         #region fields & properties
 
@@ -371,7 +371,7 @@ namespace Furball.Engine.Engine.Graphics.PostProcessEffects {
         /// The smaller this value the better performance and the worse our final image quality</param>
         /// <param name="height">see: width</param>
         /// <returns></returns>
-        public override Texture2D Draw(Texture2D inputTexture) {
+        public Texture2D Draw(Texture2D inputTexture) {
             //Check if we are initialized
             if (_graphicsDevice == null)
                 throw new Exception("Module not yet Loaded / Initialized. Use Load() first");

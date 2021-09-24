@@ -1,6 +1,7 @@
 using System;
 using Furball.Engine;
 using Furball.Engine.Engine;
+using Furball.Engine.Engine.Drawables;
 using Furball.Engine.Engine.Graphics;
 using Furball.Engine.Engine.Graphics.Drawables;
 using Furball.Engine.Engine.Graphics.Drawables.Managers;
@@ -16,9 +17,8 @@ namespace Furball.Game.Screens {
     public class BasicTestScreen : Screen {
         public override void Initialize() {
             this.Manager = new EffectDrawableManager(FurballGame.Instance.GraphicsDevice);
-            Bloom bloom = new Bloom();
-            bloom.Load(FurballGame.Instance.GraphicsDevice, FurballGame.Instance.Content, FurballGame.WindowWidth, FurballGame.WindowHeight);
-            this.Manager.AddEffect(bloom);
+            BloomedTexturedDrawable bloomRenderer = new BloomedTexturedDrawable(FurballGame.WindowWidth, FurballGame.WindowHeight);
+            this.Manager.AddEffect(bloomRenderer);
 
             TexturedDrawable whiteTexture = new(ContentReader.LoadMonogameAsset<Texture2D>("white"), new Vector2(240, 240));
 
