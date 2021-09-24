@@ -27,7 +27,7 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             //this._graphicsDevice.Present();
 
             if(this._target2D?.Width != FurballGame.WindowWidth || this._target2D?.Height != FurballGame.WindowHeight)
-                this._target2D = new RenderTarget2D(this._graphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight, false, SurfaceFormat.Alpha8, DepthFormat.Depth24);
+                this._target2D = new RenderTarget2D(this._graphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight, false, SurfaceFormat.Alpha8, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
 
             this._graphicsDevice.SetRenderTarget(this._target2D);
             this._graphicsDevice.Clear(Color.Transparent);

@@ -26,21 +26,21 @@ namespace Furball.Engine.Engine.Drawables {
 
         public BloomedTexturedDrawable(int width, int height) {
             this._bloomRenderer = new BloomRenderer();
-            this._bloomRenderer.Load(FurballGame.Instance.GraphicsDevice, FurballGame.Instance.Content, width, height);
+            this._bloomRenderer.Load(FurballGame.Instance.GraphicsDevice, FurballGame.Instance.Content, width + 400 , height + 200);
 
-            this._bloomRenderer.BloomPreset = BloomRenderer.BloomPresets.Focussed;
+            this._bloomRenderer.BloomPreset = BloomRenderer.BloomPresets.SuperWide;
 
         }
         public override Texture2D Draw(Texture2D inputTexture, SpriteBatch batch) {
             if(this._target2D?.Width != FurballGame.WindowWidth || this._target2D?.Height != FurballGame.WindowHeight)
-                this._target2D = new RenderTarget2D(FurballGame.Instance.GraphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight, false, SurfaceFormat.Alpha8, DepthFormat.Depth24);
+                this._target2D = new RenderTarget2D(FurballGame.Instance.GraphicsDevice, FurballGame.WindowWidth, FurballGame.WindowHeight, false, SurfaceFormat.Alpha8, DepthFormat.Depth24, 87, RenderTargetUsage.PreserveContents);
 
             FurballGame.Instance.GraphicsDevice.SetRenderTarget(this._target2D);
 
             this._bloomTexture = this._bloomRenderer.Draw(inputTexture);
             FurballGame.Instance.GraphicsDevice.SetRenderTarget(_target2D);
 
-            batch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+            batch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
 
             batch.Draw(inputTexture,      Vector2.Zero, Color.White);
             batch.Draw(this._bloomTexture, Vector2.Zero, Color.White);
