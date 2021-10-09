@@ -8,7 +8,7 @@ namespace Furball.Engine.Engine.Graphics {
         public SpriteBatch SpriteBatch;
 
         private bool _begun;
-        public bool Begun => _begun;
+        public bool Begun => this._begun;
         
         public DrawableBatch(SpriteBatch spriteBatch) {
             this.SpriteBatch = spriteBatch;

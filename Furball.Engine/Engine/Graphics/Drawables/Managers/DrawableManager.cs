@@ -21,6 +21,9 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
         public static List<DrawableManager> DrawableManagers = new();
         public static int                   Instances        = 0;
 
+        private Rectangle _displayRectangle = FurballGame.DisplayRect;
+        private bool      Masking;
+
         public DrawableManager() {
             lock (StatLock) {
                 Instances++;
@@ -47,32 +50,70 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 }
             }
 
+            Rectangle viewRectangle = this._displayRectangle;
+            /*
+             //TODO: see if its even necessary
+             vrect.X = (int) (vrect.X * GameBase.WindowRatio) - 1;
+            vrect.Y = (int) (vrect.Y * GameBase.WindowRatio) - 1;
+            vrect.Width = (int) (vrect.Width * GameBase.WindowRatio) + 1;
+            vrect.Height = (int) (vrect.Height * GameBase.WindowRatio) + 1 + GameBase.WindowVOffset;
+
+             */
+
             drawableBatch.Begin();
 
             this._tempDrawManaged.Sort((x, y) => (int)((y.Depth - x.Depth) * 100f));
             
-            tempCount    = this._tempDrawManaged.Count;
-            CountManaged = tempCount;
+            tempCount      = this._tempDrawManaged.Count;
+            this.CountManaged = tempCount;
 
             for (int i = 0; i < tempCount; i++) {
                 ManagedDrawable currentDrawable = this._tempDrawManaged[i];
                 if (!currentDrawable.Visible) continue;
+
+                Vector2 position = currentDrawable.Position;
                 
                 Vector2 origin = CalculateNewOriginPosition(currentDrawable);
                 currentDrawable.LastCalculatedOrigin = origin;
+                //okay nvm
+                if (this.Masking) {
+                    position.X += viewRectangle.X;
+                    position.Y += viewRectangle.Y;
+
+                    float scaledPositionX = position.X - (origin.X * currentDrawable.Scale.X);
+                    float scaledPositionY = position.Y - (origin.Y * currentDrawable.Scale.Y);
+
+                    int rightExcess = (int) ((scaledPositionX + s.DrawWidth*_displayRectangle.X) - viewRectangle.Right);
+                    if (rightExcess > 0)
+                        srcRect.Width -= rightExcess;
+
+                    int bottomExcess = (int)((scaledPositionY + s.DrawHeight * _displayRectangle.Y) - viewRectangle.Bottom);
+                    if (bottomExcess > 0)
+                        srcRect.Height -= (int)(bottomExcess * 1F / _displayRectangle.Y);
+
+                    int topExcess = (int)(viewRectangle.Top - (scaledPositionY));
+                    if (topExcess > 0)
+                    {
+                        srcRect.Y      += (int)(topExcess *1F/_displayRectangle.Y);
+                        srcRect.Height -= (int)(topExcess * 1F / _displayRectangle.Y);
+                        position.Y     += topExcess;
+                    }
+                }
+
+                position -= origin;
                 
                 DrawableManagerArgs args = new() {
                     Color      = currentDrawable.ColorOverride,
                     Effects    = currentDrawable.SpriteEffect,
                     LayerDepth = currentDrawable.Depth,
-                    Position   = currentDrawable.Position - origin,
+                    Position   = position,
                     Rotation   = currentDrawable.Rotation,
                     Scale      = currentDrawable.Scale
                 };
                 
                 Rectangle rect = new((args.Position).ToPoint(), new Point((int)Math.Ceiling(currentDrawable.Size.X * args.Scale.X), (int)Math.Ceiling(currentDrawable.Size.Y * args.Scale.Y)));
 
-                if(rect.Intersects(FurballGame.DisplayRect))
+                if(rect.Intersects(_displayRectangle))
                     currentDrawable.Draw(time, drawableBatch, args);
             }
 
@@ -80,8 +121,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
 
             this._tempDrawUnmanaged.Sort((x, y) => (int)((y.Depth - x.Depth) * 100f));
 
-            tempCount      = this._tempDrawUnmanaged.Count;
-            CountUnmanaged = tempCount;
+            tempCount        = this._tempDrawUnmanaged.Count;
+            this.CountUnmanaged = tempCount;
 
             for (int i = 0; i < tempCount; i++) {
                 UnmanagedDrawable currentDrawable = this._tempDrawUnmanaged[i];
@@ -248,6 +289,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
 
         public void Add(BaseDrawable    drawable) => this._drawables.Add(drawable);
         public void Remove(BaseDrawable drawable) => this._drawables.Remove(drawable);
+
+        public void SetVisibleArea(Rectangle displayRectangle) {
+            this._displayRectangle = displayRectangle;
+        }
 
         public override void Dispose(bool disposing) {
             for (var i = 0; i < this._drawables.Count; i++) 
