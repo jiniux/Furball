@@ -51,12 +51,17 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             FurballGame.InputManager.OnMouseUp   += this.InputManagerOnMouseUp;
             FurballGame.InputManager.OnMouseMove += this.InputManagerOnMouseMove;
 
-            this.ViewRectangle      = new ViewRectangle();
-            this.ViewRectangle.Size = new Vector2(640, 480);
+            this.ViewRectangle          = new ViewRectangle();
+            //this.ViewRectangle.Size     = new Vector2(320, 180);
+            //this.ViewRectangle.Position = new Vector2(320, 200);
         }
         
         private List<ManagedDrawable> _tempClickUpManaged = new();
         private void InputManagerOnMouseUp(object sender, ((MouseButton mouseButton, Point position) args, string cursorName) e) {
+            if (this.ViewRectangle.Rectangle.Contains(e.args.position)) {
+                e.args.position = ((e.args.position.ToVector2() - this.ViewRectangle.Position )/ this.ViewRectangle.VerticalRatio).ToPoint();
+            }
+
             // should we lock these here?
             lock(this._tempClickUpManaged) {
                 // Split _drawables into 2 lists containing the ManagedDrawables and the UnmanagedDrawables
@@ -88,6 +93,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
 
         private List<ManagedDrawable> _tempHoverManaged = new();
         private void InputManagerOnMouseMove(object sender, (Point mousePosition, string cursorName) e) {
+            if (this.ViewRectangle.Rectangle.Contains(e.mousePosition)) {
+                e.mousePosition = ((e.mousePosition.ToVector2() - this.ViewRectangle.Position ) / this.ViewRectangle.VerticalRatio).ToPoint();
+            }
+
             // should we lock these here?
             lock(this._tempClickManaged) {
                 // Split _drawables into 2 lists containing the ManagedDrawables and the UnmanagedDrawables
@@ -151,6 +160,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
         
         private List<ManagedDrawable> _tempClickManaged = new();
         private void InputManagerOnMouseDown(object sender, ((MouseButton mouseButton, Point position) args, string cursorName) e) {
+            if (this.ViewRectangle.Rectangle.Contains(e.args.position)) {
+                e.args.position = ((e.args.position.ToVector2() - this.ViewRectangle.Position )/ this.ViewRectangle.VerticalRatio).ToPoint();
+            }
+
             // should we lock these here?
             lock(this._tempClickManaged) {
                 // Split _drawables into 2 lists containing the ManagedDrawables and the UnmanagedDrawables
@@ -239,7 +252,7 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                         Color      = currentDrawable.ColorOverride,
                         Effects    = currentDrawable.SpriteEffect,
                         LayerDepth = currentDrawable.Depth,
-                        Position   = currentDrawable.Position - origin,
+                        Position   = this.ViewRectangle.Position + (currentDrawable.Position - origin),
                         Rotation   = currentDrawable.Rotation,
                         Scale      = currentDrawable.Scale,
 
@@ -253,7 +266,7 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                         Color      = currentDrawable.ColorOverride,
                         Effects    = currentDrawable.SpriteEffect,
                         LayerDepth = currentDrawable.Depth + this.Depth,
-                        Position   = (currentDrawable.Position - origin) + this.Position,
+                        Position   = this.ViewRectangle.Position + (currentDrawable.Position - origin) + this.Position,
                         Rotation   = currentDrawable.Rotation + this.Rotation,
                         Scale      = currentDrawable.Scale * this.Scale,
 
