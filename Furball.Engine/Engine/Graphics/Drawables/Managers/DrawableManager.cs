@@ -14,6 +14,23 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
         private List<UnmanagedDrawable> _tempDrawUnmanaged   = new();
         private List<UnmanagedDrawable> _tempUpdateUnmanaged = new();
 
+        /// <summary>
+        /// Makes the Drawn Sprites inherit this DrawableManages Position, Scale, Rotation and Depth
+        /// </summary>
+        public bool InheritValues = false;
+
+        /// <summary>
+        /// Small Optimization, if your DrawableManager will only ever be drawing UnmanagedDrawables,
+        /// you can skip sorting and going over the ManagedDrawables to save a little bit of time
+        /// </summary>
+        public bool SkipManagedDrawables = false;
+        /// <summary>
+        /// Small Optimization, if your DrawableManager will only ever be drawing ManagedDrawables,
+        /// you can skip sorting and going over the UnmanagedDrawables to save a little bit of time
+        /// </summary>
+        public bool SkipUnmanagedDrawables = false;
+
+
         public int CountManaged { get; private set; }
         public int CountUnmanaged { get; private set; }
 
@@ -194,6 +211,9 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
 
             drawableBatch.Begin();
 
+            if(this.SkipManagedDrawables)
+                goto SkipManaged;
+
             this._tempDrawManaged.Sort((x, y) => (int)((y.Depth - x.Depth) * 100f));
             
             tempCount    = this._tempDrawManaged.Count;
@@ -205,16 +225,29 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 
                 Vector2 origin = CalculateNewOriginPosition(currentDrawable);
                 currentDrawable.LastCalculatedOrigin = origin;
-                
-                DrawableManagerArgs args = new() {
-                    Color      = currentDrawable.ColorOverride,
-                    Effects    = currentDrawable.SpriteEffect,
-                    LayerDepth = currentDrawable.Depth,
-                    Position   = currentDrawable.Position - origin,
-                    Rotation   = currentDrawable.Rotation,
-                    Scale      = currentDrawable.Scale
-                };
-                
+
+                DrawableManagerArgs args;
+
+                if (!this.InheritValues) {
+                    args = new DrawableManagerArgs() {
+                        Color      = currentDrawable.ColorOverride,
+                        Effects    = currentDrawable.SpriteEffect,
+                        LayerDepth = currentDrawable.Depth,
+                        Position   = currentDrawable.Position - origin,
+                        Rotation   = currentDrawable.Rotation,
+                        Scale      = currentDrawable.Scale
+                    };
+                } else {
+                    args = new DrawableManagerArgs() {
+                        Color      = currentDrawable.ColorOverride,
+                        Effects    = currentDrawable.SpriteEffect,
+                        LayerDepth = currentDrawable.Depth + this.Depth,
+                        Position   = (currentDrawable.Position - origin) + this.Position,
+                        Rotation   = currentDrawable.Rotation + this.Rotation,
+                        Scale      = currentDrawable.Scale * this.Scale
+                    };
+                }
+
                 Rectangle rect = new((args.Position).ToPoint(), new Point((int)Math.Ceiling(currentDrawable.Size.X * args.Scale.X), (int)Math.Ceiling(currentDrawable.Size.Y * args.Scale.Y)));
 
                 if(rect.Intersects(FurballGame.DisplayRect))
@@ -222,6 +255,11 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             }
 
             drawableBatch.End();
+
+            SkipManaged: ;
+
+            if(this.SkipUnmanagedDrawables)
+                goto SkipUnmanaged;
 
             this._tempDrawUnmanaged.Sort((x, y) => (int)((y.Depth - x.Depth) * 100f));
 
@@ -235,17 +273,32 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 Vector2 origin = CalculateNewOriginPosition(currentDrawable);
                 currentDrawable.LastCalculatedOrigin = origin;
 
-                DrawableManagerArgs args = new() {
-                    Color      = currentDrawable.ColorOverride,
-                    Effects    = currentDrawable.SpriteEffect,
-                    LayerDepth = currentDrawable.Depth,
-                    Position   = currentDrawable.Position - origin,
-                    Rotation   = currentDrawable.Rotation,
-                    Scale      = currentDrawable.Scale
-                };
+                DrawableManagerArgs args;
+
+                if (!this.InheritValues) {
+                    args = new DrawableManagerArgs() {
+                        Color      = currentDrawable.ColorOverride,
+                        Effects    = currentDrawable.SpriteEffect,
+                        LayerDepth = currentDrawable.Depth,
+                        Position   = currentDrawable.Position - origin,
+                        Rotation   = currentDrawable.Rotation,
+                        Scale      = currentDrawable.Scale
+                    };
+                } else {
+                    args = new DrawableManagerArgs() {
+                        Color      = currentDrawable.ColorOverride,
+                        Effects    = currentDrawable.SpriteEffect,
+                        LayerDepth = currentDrawable.Depth + this.Depth,
+                        Position   = (currentDrawable.Position - origin) + this.Position,
+                        Rotation   = currentDrawable.Rotation + this.Rotation,
+                        Scale      = currentDrawable.Scale * this.Scale
+                    };
+                }
 
                 currentDrawable.Draw(time, drawableBatch, args);
             }
+
+            SkipUnmanaged: ;
         }
 
         private RenderTarget2D _target2D;
@@ -297,11 +350,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 }
             }
 
-            this._tempUpdateManaged   = this._tempUpdateManaged.OrderBy(o => o.Depth).ToList();
-            this._tempUpdateUnmanaged = this._tempUpdateUnmanaged.OrderBy(o => o.Depth).ToList();
+            if(this.SkipManagedDrawables)
+                goto SkipManaged;
 
-            // bool hoverHandled = false;
-            // bool clickHandled = false;
+            this._tempUpdateManaged   = this._tempUpdateManaged.OrderBy(o => o.Depth).ToList();
 
             tempCount = this._tempUpdateManaged.Count;
             for (int i = 0; i < tempCount; i++) {
@@ -311,6 +363,13 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 currentDrawable.Update(time);
             }
 
+            SkipManaged: ;
+
+            if(this.SkipUnmanagedDrawables)
+                goto SkipUnmanaged;
+
+            this._tempUpdateUnmanaged = this._tempUpdateUnmanaged.OrderBy(o => o.Depth).ToList();
+
             tempCount = this._tempUpdateUnmanaged.Count;
             for (int i = 0; i < tempCount; i++) {
                 UnmanagedDrawable currentDrawable = this._tempUpdateUnmanaged[i];
@@ -318,6 +377,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                 currentDrawable.UpdateTweens();
                 currentDrawable.Update(time);
             }
+
+            SkipUnmanaged: ;
         }
 
         public void Add(BaseDrawable    drawable) => this._drawables.Add(drawable);
