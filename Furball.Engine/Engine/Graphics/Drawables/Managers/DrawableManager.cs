@@ -256,8 +256,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                         Rotation   = currentDrawable.Rotation,
                         Scale      = currentDrawable.Scale,
 
-                        ScaledPosition = (currentDrawable.Position - origin) * this.ViewRectangle.VerticalRatio,
-                        ScaledScale = currentDrawable.Scale * this.ViewRectangle.VerticalRatio,
+                        ScaledPosition = FurballGame.VerticalRatio * (currentDrawable.Position - origin) * this.ViewRectangle.VerticalRatio,
+                        ScaledScale =    FurballGame.VerticalRatio * currentDrawable.Scale * this.ViewRectangle.VerticalRatio,
 
                         ViewRectangle = this.ViewRectangle
                     };
