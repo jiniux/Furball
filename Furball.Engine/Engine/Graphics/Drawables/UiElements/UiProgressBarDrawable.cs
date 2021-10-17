@@ -49,14 +49,14 @@ namespace Furball.Engine.Engine.Graphics.Drawables.UiElements {
 
         public override void Draw(GameTime time, DrawableBatch batch, DrawableManagerArgs args) {
             batch.SpriteBatch.FillRectangle(
-                args.Position * FurballGame.VerticalRatio, 
-                new Vector2(this._progressWidth, this.BarSize.Y) * FurballGame.VerticalRatio,
+                args.ScaledPosition,
+                new Vector2(this._progressWidth, this.BarSize.Y) * args.ViewRectangle.VerticalRatio,
                 args.Color, 
                 this.Depth
             );
             batch.SpriteBatch.DrawRectangle(
-                args.Position * FurballGame.VerticalRatio, 
-                this.BarSize * FurballGame.VerticalRatio, 
+                args.ScaledPosition,
+                this.BarSize * args.ViewRectangle.VerticalRatio,
                 this.OutlineColor, 
                 this.OutlineThickness * FurballGame.VerticalRatio, 
                 args.LayerDepth

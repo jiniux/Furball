@@ -109,8 +109,8 @@ namespace Furball.Engine.Engine.Graphics.Drawables.UiElements {
 
         public override void Draw(GameTime time, DrawableBatch batch, DrawableManagerArgs args) {
             batch.SpriteBatch.DrawRectangle(
-                args.Position * FurballGame.VerticalRatio, 
-                this.Size * FurballGame.VerticalRatio, 
+                args.ScaledPosition,
+                this.Size * args.ViewRectangle.VerticalRatio,
                 this.Selected ? Color.LightGray : Color.DarkGray, 
                 args.LayerDepth
             );

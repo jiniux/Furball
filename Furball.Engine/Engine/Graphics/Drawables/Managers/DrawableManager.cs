@@ -30,6 +30,9 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
         /// </summary>
         public bool SkipUnmanagedDrawables = false;
 
+        public bool DisableCulling = true;
+
+        public ViewRectangle ViewRectangle;
 
         public int CountManaged { get; private set; }
         public int CountUnmanaged { get; private set; }
@@ -46,7 +49,10 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
             
             FurballGame.InputManager.OnMouseDown += this.InputManagerOnMouseDown;
             FurballGame.InputManager.OnMouseUp   += this.InputManagerOnMouseUp;
-            FurballGame.InputManager.OnMouseMove += this.InputManagerOnMouseMove; 
+            FurballGame.InputManager.OnMouseMove += this.InputManagerOnMouseMove;
+
+            this.ViewRectangle      = new ViewRectangle();
+            this.ViewRectangle.Size = new Vector2(640, 480);
         }
         
         private List<ManagedDrawable> _tempClickUpManaged = new();
@@ -235,7 +241,12 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                         LayerDepth = currentDrawable.Depth,
                         Position   = currentDrawable.Position - origin,
                         Rotation   = currentDrawable.Rotation,
-                        Scale      = currentDrawable.Scale
+                        Scale      = currentDrawable.Scale,
+
+                        ScaledPosition = (currentDrawable.Position - origin) * this.ViewRectangle.VerticalRatio,
+                        ScaledScale = currentDrawable.Scale * this.ViewRectangle.VerticalRatio,
+
+                        ViewRectangle = this.ViewRectangle
                     };
                 } else {
                     args = new DrawableManagerArgs() {
@@ -244,14 +255,21 @@ namespace Furball.Engine.Engine.Graphics.Drawables.Managers {
                         LayerDepth = currentDrawable.Depth + this.Depth,
                         Position   = (currentDrawable.Position - origin) + this.Position,
                         Rotation   = currentDrawable.Rotation + this.Rotation,
-                        Scale      = currentDrawable.Scale * this.Scale
+                        Scale      = currentDrawable.Scale * this.Scale,
+
+                        ScaledPosition = this.Position + (currentDrawable.Position - origin) * this.ViewRectangle.VerticalRatio,
+                        ScaledScale    = (currentDrawable.Scale * this.Scale) * this.ViewRectangle.VerticalRatio,
+
+                        ViewRectangle = this.ViewRectangle
                     };
                 }
 
                 Rectangle rect = new((args.Position).ToPoint(), new Point((int)Math.Ceiling(currentDrawable.Size.X * args.Scale.X), (int)Math.Ceiling(currentDrawable.Size.Y * args.Scale.Y)));
 
-                if(rect.Intersects(FurballGame.DisplayRect))
-                    currentDrawable.Draw(time, drawableBatch, args);
+                if(!this.DisableCulling && !rect.Intersects(this.ViewRectangle.Rectangle))
+                    continue;
+
+                currentDrawable.Draw(time, drawableBatch, args);
             }
 
             drawableBatch.End();
