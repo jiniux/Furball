@@ -14,6 +14,7 @@ namespace Furball.Game.Screens {
 
             this.Screens = new List<(string, Screen)> {
                 ("Catmull Testing", new CatmullTestScreen()),
+                ("Forms", new FormTestScreen()),
             };
 
             TexturedDrawable background = new TexturedDrawable(FurballGame.WhitePixel, Vector2.Zero) {
