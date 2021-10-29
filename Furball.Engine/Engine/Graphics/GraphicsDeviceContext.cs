@@ -14,7 +14,11 @@ namespace Furball.Engine.Engine.Graphics {
         }
 
         public RenderTarget2D CreateRenderTarget(int width = -1, int height = -1) {
-            return new RenderTarget2D(this._graphicsDevice, width == -1 ? 1280 : width, width == -1 ? 720 : height, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            return new RenderTarget2D(this._graphicsDevice, width == -1 ? 1280 : width, width == -1 ? 720 : height, false, SurfaceFormat.Color, DepthFormat.Depth24, 4, RenderTargetUsage.PreserveContents);
+        }
+
+        public void SetNewRenderTarget(int width = -1, int height = -1) {
+            this.SetTarget(this.CreateRenderTarget(width, height));
         }
 
         public void SetTarget(RenderTarget2D target) {

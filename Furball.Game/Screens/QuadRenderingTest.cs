@@ -27,17 +27,14 @@ namespace Furball.Game.Screens {
         }
 
         public override void Draw(GameTime gameTime) {
-            base.Draw(gameTime);
-
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode       = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizerState;
-
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             foreach (EffectPass pass in this.basicEffect.CurrentTechnique.Passes) {
                 pass.Apply();
-                this._renderer.RenderQuad(new Vector2(-1f,1), new Vector2(0, 0));
+                this._renderer.RenderQuad(new Vector2(-0.25f, -0.25f), new Vector2(0.25f, 0.25f));
             }
+
+            base.Draw(gameTime);
         }
     }
 }
