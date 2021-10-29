@@ -34,11 +34,12 @@ namespace Furball.Engine {
 
         public static Random Random = new();
 
-        public static FurballGame   Instance;
-        public static DrawableBatch DrawableBatch;
-        public static InputManager  InputManager;
-        public static ITimeSource   GameTimeSource;
-        public static Scheduler     GameTimeScheduler;
+        public static FurballGame           Instance;
+        public static DrawableBatch         DrawableBatch;
+        public static GraphicsDeviceContext DeviceContext;
+        public static InputManager          InputManager;
+        public static ITimeSource           GameTimeSource;
+        public static Scheduler             GameTimeScheduler;
 
         public static DebugCounter DebugCounter;
 
@@ -289,7 +290,8 @@ namespace Furball.Engine {
         }
 
         protected override void LoadContent() {
-            DrawableBatch = new DrawableBatch(new SpriteBatch(this.GraphicsDevice));
+            DeviceContext = new GraphicsDeviceContext(this.GraphicsDevice);
+            DrawableBatch = new DrawableBatch(new SpriteBatch(this.GraphicsDevice), DeviceContext);
 
             this.ChangeScreenSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 

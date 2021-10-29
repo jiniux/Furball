@@ -5,13 +5,15 @@ namespace Furball.Engine.Engine.Graphics {
     /// A Basic Abstraction for Sprite and Shape batch
     /// </summary>
     public class DrawableBatch {
-        public SpriteBatch SpriteBatch;
+        public SpriteBatch           SpriteBatch;
+        public GraphicsDeviceContext DeviceContext;
 
         private bool _begun;
         public bool Begun => _begun;
         
-        public DrawableBatch(SpriteBatch spriteBatch) {
-            this.SpriteBatch = spriteBatch;
+        public DrawableBatch(SpriteBatch spriteBatch, GraphicsDeviceContext context) {
+            this.SpriteBatch   = spriteBatch;
+            this.DeviceContext = context;
         }
 
         public void Begin() {
