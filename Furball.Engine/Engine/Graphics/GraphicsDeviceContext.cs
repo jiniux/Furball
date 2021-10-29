@@ -1,6 +1,9 @@
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Furball.Engine.Engine.Graphics {
+    public record Camera(Matrix WorldPosition, Matrix CameraState, Matrix Projection);
+
     public class GraphicsDeviceContext {
         private GraphicsDevice        _graphicsDevice;
         private RenderTargetBinding[] _oldTargets;
@@ -25,6 +28,14 @@ namespace Furball.Engine.Engine.Graphics {
             this._graphicsDevice.SetRenderTargets(this._oldTargets);
 
             return this._currentTarget;
+        }
+
+        public Camera GetBasicScreenCamera() {
+            return new Camera(
+                Matrix.CreateTranslation(0f, 0, 0),
+                Matrix.CreateLookAt(new Vector3(0, 0, 3), new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                Matrix.CreatePerspective(1f, 1f, 1f, 100f)
+            );
         }
 
         public GraphicsDevice GetGraphicsDevice() => this._graphicsDevice;
